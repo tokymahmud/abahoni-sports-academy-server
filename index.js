@@ -39,6 +39,27 @@ async function run() {
         res.send(result);
     })
 
+    app.get('/sclasses', async(req,res)=>{
+        const email= req.query.email;
+        console.log(email);
+        if(!email){
+            res.send([]);
+        }
+        else {
+            try {
+              const query = { email: email };
+              const result = await sclassesCollection.find(query).toArray();
+              res.send(result);
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        // const query ={email:email};
+        // const result =await sclassesCollection.find(query).toArray();
+        // res.send(result);
+
+    });
+
     app.post('/sclasses',async(req,res)=>{
       const item=req.body;
       console.log(item);
