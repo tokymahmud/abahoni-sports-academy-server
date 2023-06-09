@@ -28,6 +28,7 @@ async function run() {
     await client.connect(); 
     const classesCollection =client.db('Abahoni').collection('classes');
     const instructorsCollection =client.db('Abahoni').collection('instructors');
+    const sclassesCollection =client.db('Abahoni').collection('sclasses');
 
     app.get('/classes', async(req,res)=>{
         const result = await classesCollection.find().toArray();
@@ -36,6 +37,13 @@ async function run() {
     app.get('/instructors', async(req,res)=>{
         const result = await instructorsCollection.find().toArray();
         res.send(result);
+    })
+
+    app.post('/sclasses',async(req,res)=>{
+      const item=req.body;
+      console.log(item);
+      const result =await sclassesCollection.insertOne(item);
+      res.send(result);
     })
 
 
