@@ -11,6 +11,22 @@ const jwt = require('jsonwebtoken');
 app.use(cors());
 app.use(express.json());
 
+const verifyJWT= (req,res,next)=>{
+    const authorization =req.headders.authorization;
+    if(!authorization){
+        return res.send.status(401).send({error:true, message:'unauthorized access'});
+
+    }
+    const token=authorization.split('')[1];
+    jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,decoded)=>{
+        if(err){
+            return res.send.status(401).send({error:true, message:'unauthorized access'});
+        }
+        req.decoded=decoded;
+        next();
+    })
+}
+
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.cjpsvw7.mongodb.net/?retryWrites=true&w=majority`;
@@ -90,7 +106,7 @@ async function run() {
         res.send(result);
     })
 
-    app.get('/sclasses', async(req,res)=>{
+    app.get('/sclasses',verifyJWT, async(req,res)=>{
         const email= req.query.email;
         console.log(email);
         if(!email){
@@ -98,6 +114,11 @@ async function run() {
         }
         else {
             try {
+                // things new added.need to check todo
+                const decodedEmail=req.decoded.email;
+                if(email!==decodedEmail){
+                    return res.status(403).send({error:true, message:'forbidded access'})
+                }
               const query = { email: email };
               const result = await sclassesCollection.find(query).toArray();
               res.send(result);
