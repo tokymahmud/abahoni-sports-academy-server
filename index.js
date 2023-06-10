@@ -3,6 +3,8 @@ const app =express();
 const cors =require('cors');
 const port =process.env.PORT || 5000;
 require('dotenv').config()
+const jwt = require('jsonwebtoken');
+
 
 
 
@@ -30,6 +32,13 @@ async function run() {
     const usersCollection =client.db('Abahoni').collection('users');
     const instructorsCollection =client.db('Abahoni').collection('instructors');
     const sclassesCollection =client.db('Abahoni').collection('sclasses');
+
+
+    app.post('/jwt',(req,res)=>{
+        const user=req.body;
+        const token=jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{expiresIn:'1h'})
+        res.send({token})
+    })
 
 
     app.get('/users', async(req,res)=>{
