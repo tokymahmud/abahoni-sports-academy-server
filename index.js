@@ -163,7 +163,6 @@ async function run() {
 
     })
 
-    //feed back from admin and status
 
     app.post('/classes/:id/feedback', verifyJWT, (req, res) => {
         const { id } = req.params;
@@ -177,6 +176,24 @@ async function run() {
             if (err) {
               console.error(err);
               res.status(500).send('Error creating feedback');
+            } else {
+              res.json(updatedClass.value);
+            }
+          }
+        );
+      });
+
+      app.patch('/classes/:id/deny', verifyJWT, verifyAdmin, (req, res) => {
+        const { id } = req.params;
+      
+        classesCollection.findOneAndUpdate(
+          { _id: new ObjectId(id) },
+          { $set: { status: 'denied' } },
+          { returnOriginal: false },
+          (err, updatedClass) => {
+            if (err) {
+              console.error(err);
+              res.status(500).send('Error denying class');
             } else {
               res.json(updatedClass.value);
             }
