@@ -124,6 +124,8 @@ async function run() {
   
       })
 
+      
+
       app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
         const email = req.params.email;
   
@@ -160,6 +162,29 @@ async function run() {
         res.send(result);
 
     })
+
+    //feed back from admin and status
+
+    app.post('/classes/:id/feedback', verifyJWT, (req, res) => {
+        const { id } = req.params;
+        const { message } = req.body;
+      
+        classesCollection.findOneAndUpdate(
+          { _id: new ObjectId(id) },
+          { $push: { feedback: { message } } },
+          { returnOriginal: false },
+          (err, updatedClass) => {
+            if (err) {
+              console.error(err);
+              res.status(500).send('Error creating feedback');
+            } else {
+              res.json(updatedClass.value);
+            }
+          }
+        );
+      });
+      
+
     app.get('/instructors', async(req,res)=>{
         const result = await instructorsCollection.find().toArray();
         res.send(result);
