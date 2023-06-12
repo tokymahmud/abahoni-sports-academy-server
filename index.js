@@ -295,6 +295,17 @@ async function run() {
   
         res.send({ insertResult, deleteResult });
       })
+       
+      
+      app.get('/payments', async (req, res) => {
+        try {
+          const result = await paymentCollection.find().toArray();
+          res.send(result);
+        } catch (error) {
+          console.error(error);
+          res.status(500).send('Error retrieving payments');
+        }
+      });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
